@@ -70,9 +70,9 @@ Dans le premier exemple, le rouge est à la bonne position ; le vert et le bleu 
 
 ## Accès au jeu
 
-Adresse prévue : https://severinemo.github.io/projet_code_secret_heg/
+[Jouer à Code secret](https://severinemo.github.io/projet_code_secret_heg/)
 
-La publication GitHub Pages doit être activée sur la branche `gh-pages`, dossier `/ (root)`, dans les paramètres du dépôt.
+GitHub Pages publie le contenu de la branche `gh-pages`, dossier racine. Pour publier une évolution, mettre cette branche à jour avec la version validée de `main`.
 
 ## Source
 
@@ -89,7 +89,7 @@ Cette variante pédagogique suit les règles de cette annexe ; elle ne reprend p
 3. **Moteur** : tirage aléatoire de quatre couleurs avec répétitions, validation des propositions, calcul des indices sans double comptage et limite de dix essais.
 4. **Interface** : quatre sélecteurs utilisables au clavier et au toucher, noms associés aux couleurs, historique, compteur, messages de victoire/défaite et bouton Nouvelle partie. Sur petit écran, les règles suivent le plateau dans la page, sans menu replié.
 5. **Vérification** : 15 assertions exécutées avec succès sur le moteur JavaScript : exemples de l’annexe, couleurs déplacées, propositions invalides, victoire au dixième essai, défaite, blocage après la fin, nouvel état vierge et protection de l’historique contre une modification extérieure.
-6. **Publication** : dépôt des sources sur GitHub et préparation de la branche `gh-pages`. Le statut effectif de publication doit être vérifié après activation de GitHub Pages.
+6. **Publication** : dépôt des sources sur GitHub et création de la branche `gh-pages`. GitHub a lancé automatiquement le workflow « pages build and deployment ».
 
 ### Fichiers et reprise du projet
 
@@ -107,4 +107,4 @@ Pour tester localement, servir ce dossier avec un serveur HTTP statique, puis ou
 - La vérification visuelle sur ordinateur et smartphone reste à réaliser : les outils locaux et le navigateur automatisé étaient indisponibles lors de la création.
 - La partie reste en mémoire : recharger ou fermer la page lance une nouvelle partie.
 - Aucune API de test pédagogique supplémentaire n’est revendiquée : son contrat ne figure pas dans ce README.
-- L’adresse du site reste à confirmer une fois GitHub Pages activé. Les sources ont été préparées directement dans GitHub ; le dossier local n’a pas été synchronisé.
+- Les sources ont été préparées directement dans GitHub ; le dossier local n’a pas été synchronisé.
