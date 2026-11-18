@@ -42,40 +42,66 @@ Dans une partie réelle, le code est choisi aléatoirement et reste caché : cet
 
 ## Vérifier
 
-### Vérifications du moteur
+### Bilan des tests du moteur — version 1.0
 
-Le fichier `engine.test.js` contient 15 assertions portant sur :
+**Date d’exécution : 18 novembre 2026.** Les tests ont été exécutés dans l’environnement JavaScript de l’assistant, sur le code ensuite enregistré dans le commit [ea038fb8f0900511dab3c2f37afb93ae0996c13a](https://github.com/Severinemo/projet_code_secret_heg/commit/ea038fb8f0900511dab3c2f37afb93ae0996c13a) (version 1.0). Ils correspondent aux assertions de [engine.test.js à cette version](https://github.com/Severinemo/projet_code_secret_heg/blob/ea038fb8f0900511dab3c2f37afb93ae0996c13a/engine.test.js).
 
-- les exemples d’indices et les répétitions de couleurs ;
-- le refus des propositions invalides sans consommation d’essai ;
-- la victoire au dixième essai et la défaite après dix échecs ;
-- le blocage des propositions après la fin de partie ;
-- l’état initial d’une nouvelle partie ;
-- la protection de l’historique contre une modification extérieure.
+**Preuve retrouvée dans la conversation de création :** sortie globale `{"passed":15}`. Chaque assertion interrompt l’exécution en cas d’échec : ce total confirme les 15 réussites, sans constituer un journal individuel. Ces résultats concernent cette version du moteur ; ils ne prouvent ni le fonctionnement de l’interface ni celui de versions futures.
 
-Pour les exécuter avec Node.js installé, ouvrir un terminal à la racine d’une copie locale du dépôt, puis lancer :
+| Nº | Comportement vérifié | Résultat attendu | Résultat observé | Type | Statut | Version |
+| --- | --- | --- | --- | --- | --- | --- |
+| 1 | Secret rouge–bleu–vert–jaune ; proposition rouge–vert–bleu–orange | 1 bien placée, 2 mal placées | Valeurs conformes | Automatisé | Réussi | 1.0 / ea038fb |
+| 2 | Secret rouge–rouge–bleu–vert ; proposition de quatre rouges | 2 bien placées, 0 mal placée | Valeurs conformes ; rouges supplémentaires non comptés | Automatisé | Réussi | 1.0 / ea038fb |
+| 3 | Quatre couleurs correctes, toutes décalées | 0 bien placée, 4 mal placées | Valeurs conformes | Automatisé | Réussi | 1.0 / ea038fb |
+| 4 | Proposition incomplète : une seule couleur | Refus | `ok = false` | Automatisé | Réussi | 1.0 / ea038fb |
+| 5 | Proposition contenant la couleur interdite rose | Refus | `ok = false` | Automatisé | Réussi | 1.0 / ea038fb |
+| 6 | Historique après les deux propositions invalides | Aucun essai enregistré | Longueur : 0 | Automatisé | Réussi | 1.0 / ea038fb |
+| 7 | Code trouvé après neuf propositions incorrectes | Victoire au dixième essai | État `won` | Automatisé | Réussi | 1.0 / ea038fb |
+| 8 | Compteur après cette victoire | 10 essais enregistrés | Longueur : 10 | Automatisé | Réussi | 1.0 / ea038fb |
+| 9 | Nouvelle proposition après une victoire | Refus | `ok = false` | Automatisé | Réussi | 1.0 / ea038fb |
+| 10 | État après ce refus | État et historique inchangés | Égalité avec l’état mémorisé | Automatisé | Réussi | 1.0 / ea038fb |
+| 11 | Dix propositions incorrectes | Défaite | État `lost` | Automatisé | Réussi | 1.0 / ea038fb |
+| 12 | Proposition correcte après la défaite | Refus | `ok = false` | Automatisé | Réussi | 1.0 / ea038fb |
+| 13 | Compteur après cette proposition refusée | Toujours 10 essais | Longueur : 10 | Automatisé | Réussi | 1.0 / ea038fb |
+| 14 | Création d’une nouvelle instance de partie | Partie en cours et historique vide | `status: playing`, `history: []` | Automatisé | Réussi | 1.0 / ea038fb |
+| 15 | Modification d’une copie de l’historique obtenue par `getState()` | Historique interne protégé | La couleur interne reste `violet` | Automatisé | Réussi | 1.0 / ea038fb |
+
+### Autres contrôles retrouvés
+
+Ces contrôles ont été réalisés le 18 novembre 2026. Les comparaisons de contenu proviennent des résultats d’outils consignés dans la conversation.
+
+| Contrôle | Résultat attendu | Résultat observé | Type | Statut | Version concernée |
+| --- | --- | --- | --- | --- | --- |
+| Syntaxe d’`app.js`, après retrait de son import pour l’analyse | Aucune erreur de syntaxe | Construction JavaScript acceptée | Automatisé | Réussi | 1.0 / `ea038fb` |
+| Déploiement initial GitHub Pages | Workflow terminé avec succès | `status: completed`, `conclusion: success` | Automatisé — GitHub Actions | Réussi | `ea038fb` |
+| Tentatives de consultation du site publié par l’outil web | Page accessible pour inspection | Erreur de l’outil : URL inaccessible ; aucun résultat exploitable sur le jeu | Automatisé — outil web | Résultat non retrouvé | Site visé après le déploiement initial ; version servie non confirmée |
+| Conformité du README publié avec la proposition validée | Contenu identique | Comparaison : `true` | Automatisé | Réussi | `33e2ffcf060a5237c8a09f840538c860a9d770f6` |
+| Conformité d’AGENTS.md avec le texte fourni | Contenu identique | Comparaison : `true` | Automatisé | Réussi | `83aaf4031043507859bc26351b8cfc07416118a8` |
+
+Le [workflow de déploiement initial](https://github.com/Severinemo/projet_code_secret_heg/actions/runs/44280852956) confirme la publication, mais pas le bon fonctionnement du jeu dans un navigateur. Aucun test manuel exécuté ni aucun échec démontré du jeu n’a été retrouvé. Les erreurs observées concernaient les outils d’accès.
+
+### Tests prévus sans preuve d’exécution
+
+| Test prévu | Type prévu | Contrôle restant | Version exécutée |
+| --- | --- | --- | --- |
+| Exécution locale de `npm test` | Automatisé | Lancement de la suite avec Node.js et la configuration du dépôt | Aucune exécution retrouvée |
+| Affichage sur ordinateur et smartphone | Manuel | Lisibilité, adaptation aux écrans, règles et historique consultables | Aucune exécution retrouvée |
+| Sélection au clavier et au toucher | Manuel | Navigation et choix des quatre couleurs | Aucune exécution retrouvée |
+| Messages, compteur et historique | Manuel | Mise à jour après validation et refus d’une proposition | Aucune exécution retrouvée |
+| Bouton **Nouvelle partie** | Manuel | Réinitialisation de l’interface, des essais et des indices ; création d’un code | Aucune exécution retrouvée |
+| Partie complète gagnée et perdue | Manuel | Fonctionnement de bout en bout et blocage après la fin | Aucune exécution retrouvée |
+
+### Reproduire les tests du moteur
+
+Avec Node.js installé, ouvrir un terminal à la racine d’une copie locale du dépôt, puis lancer :
 
 ```sh
 npm test
 ```
 
-Aucune dépendance externe n’est nécessaire.
+Aucune dépendance externe n’est nécessaire. Pour reproduire la version historique, utiliser le commit `ea038fb8f0900511dab3c2f37afb93ae0996c13a`. La commande locale n’a pas été exécutée lors de la création : les outils locaux étaient indisponibles.
 
-**Résultat observé le 18 novembre 2026 :** les 15 assertions ont réussi dans l’environnement JavaScript utilisé pendant la création. La commande `npm test` n’a pas été exécutée localement, les outils d’accès local étant indisponibles.
-
-### Vérifications de publication
-
-Le déploiement initial du jeu sur GitHub Pages s’est terminé avec succès le **18 novembre 2026**. Les exécutions sont consultables dans [GitHub Actions](https://github.com/Severinemo/projet_code_secret_heg/actions).
-
-### Vérifications restant à réaliser
-
-Les tests du moteur ne valident pas l’interface. Il reste à vérifier dans un navigateur :
-
-1. L’affichage et la lisibilité sur ordinateur et smartphone.
-2. La sélection des couleurs au clavier et au toucher.
-3. L’affichage des messages, du compteur, des essais et de leurs indices.
-4. Le comportement du bouton **Nouvelle partie**.
-5. Le déroulement complet d’une partie jusqu’à la victoire ou la défaite.
+Ce bilan consigne les preuves existantes ; aucun test du jeu n’a été relancé lors de sa rédaction.
 
 ## Se repérer
 
