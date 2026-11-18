@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="fr">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#142c28"><title>Code secret — À vous de décoder</title><link rel="stylesheet" href="style.css"></head>
+<body>
+<header><a class="brand" href="./">◈ CODE SECRET</a><span>LE JEU DE DÉDUCTION · V1.0</span></header>
+<main>
+<section class="intro"><p class="eyebrow">QUATRE COULEURS. DIX CHANCES.</p><h1>À vous de<br><em>décoder.</em></h1><p>Observez les indices, affinez vos choix et trouvez la combinaison cachée.</p></section>
+<div class="layout">
+<section class="play panel" aria-labelledby="play-title">
+<div class="section-head"><h2 id="play-title">Votre combinaison</h2><span id="counter" class="badge">0 / 10 essais</span></div>
+<div class="secret" aria-label="Code secret caché"><span>?</span><span>?</span><span>?</span><span>?</span></div>
+<form id="form" novalidate><fieldset id="choices"><legend>Choisissez les couleurs de gauche à droite</legend><div class="selectors" id="selectors"></div></fieldset>
+<div class="actions"><button class="primary" type="submit" id="submit">Valider l’essai <span aria-hidden="true">→</span></button><button type="button" id="restart">Nouvelle partie</button></div></form>
+<p id="message" role="status" aria-live="polite">À vous de jouer. Une couleur peut apparaître plusieurs fois.</p>
+<div class="section-head history-head"><h2>Vos essais</h2><span>Bien placées / Mal placées</span></div>
+<p id="empty">Vos propositions et leurs indices apparaîtront ici.</p><ol id="history" aria-label="Historique des essais"></ol>
+</section>
+<aside class="panel rules" aria-labelledby="rules-title"><p class="eyebrow">LE MÉMO DU DÉCODEUR</p><h2 id="rules-title">Les règles du jeu</h2>
+<ol><li>Trouvez <strong>4 couleurs dans le bon ordre</strong> parmi rouge, bleu, vert, jaune, orange et violet. Les répétitions sont possibles. Le code reste fixe et caché.</li>
+<li>Vous avez <strong>10 essais</strong>. Modifiez vos quatre choix avant de valider.</li>
+<li>Un choix incomplet ou non autorisé est refusé avec une explication, sans consommer d’essai ni modifier l’historique.</li>
+<li>Chaque proposition valide utilise un essai. Les essais et indices restent affichés jusqu’à la nouvelle partie.</li>
+<li><strong>Bien placée :</strong> bonne couleur à la bonne position.<br><strong>Mal placée :</strong> bonne couleur à une autre position. Les bien placées sont comptées en premier ; chaque occurrence compte une seule fois. Les indices ne désignent aucune position.</li>
+<li><strong>4 bien placées = gagné</strong>, même au dixième essai. Après dix essais sans réussite, la partie est perdue.</li>
+<li>La partie terminée, aucun nouvel essai n’est accepté. <strong>Nouvelle partie</strong> choisit un code et efface essais et indices.</li></ol>
+<div class="example"><strong>Un exemple</strong><p>Secret : rouge, bleu, vert, jaune.<br>Essai : rouge, vert, bleu, orange.</p><p>→ 1 bien placée · 2 mal placées</p></div>
+</aside></div></main><footer>Un peu de logique, une touche d’intuition. <span>Code secret · 2026</span></footer>
+<script type="module" src="app.js"></script></body></html>

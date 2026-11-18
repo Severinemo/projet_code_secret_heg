@@ -4,7 +4,7 @@ Un jeu solo de déduction inspiré du Mastermind : retrouvez le code secret choi
 
 ## Présentation du projet
 
-Code secret sera une **application web utilisable sur ordinateur et sur smartphone**. Son interface devra s’adapter à ces deux types d’écran.
+Code secret est une **application web utilisable sur ordinateur et sur smartphone**. Son interface devra s’adapter à ces deux types d’écran.
 
 L’application devra être publiée sur **GitHub Pages** pour permettre de jouer depuis un navigateur web.
 
@@ -70,10 +70,41 @@ Dans le premier exemple, le rouge est à la bonne position ; le vert et le bleu 
 
 ## Accès au jeu
 
-L’adresse de l’application sur GitHub Pages reste à renseigner après sa publication.
+Adresse prévue : https://severinemo.github.io/projet_code_secret_heg/
+
+La publication GitHub Pages doit être activée sur la branche `gh-pages`, dossier `/ (root)`, dans les paramètres du dépôt.
 
 ## Source
 
 Ces règles reprennent l’annexe **« Règles communes »**, référence `code-couleurs-1.0`, du document [Projet — Code secret en couleurs, inspiré du Mastermind](https://docs.google.com/document/d/17RUqUnEvIilitiNSY1kbK0QT7vBVcUeAT3L6ONJN8XU/edit?tab=t.0#heading=h.kczu9qr0qzll), édition 2.2, mise à jour le 3 novembre 2026.
 
 Cette variante pédagogique suit les règles de cette annexe ; elle ne reprend pas toutes les variantes commerciales du Mastermind.
+
+## étapes de conception
+
+### 18 novembre 2026 — Version 1.0
+
+1. **Cadrage** : reprise des sept règles communes du README et des exigences ordinateur/smartphone, avec règles et historique affichés dans la page.
+2. **Architecture** : application statique HTML, CSS et JavaScript, sans dépendance externe ni serveur applicatif. `engine.js` isole les règles ; `app.js` gère l’interface.
+3. **Moteur** : tirage aléatoire de quatre couleurs avec répétitions, validation des propositions, calcul des indices sans double comptage et limite de dix essais.
+4. **Interface** : quatre sélecteurs utilisables au clavier et au toucher, noms associés aux couleurs, historique, compteur, messages de victoire/défaite et bouton Nouvelle partie. Sur petit écran, les règles suivent le plateau dans la page, sans menu replié.
+5. **Vérification** : 15 assertions exécutées avec succès sur le moteur JavaScript : exemples de l’annexe, couleurs déplacées, propositions invalides, victoire au dixième essai, défaite, blocage après la fin, nouvel état vierge et protection de l’historique contre une modification extérieure.
+6. **Publication** : dépôt des sources sur GitHub et préparation de la branche `gh-pages`. Le statut effectif de publication doit être vérifié après activation de GitHub Pages.
+
+### Fichiers et reprise du projet
+
+- `index.html` : structure de la page et règles visibles.
+- `style.css` : présentation et adaptation aux écrans.
+- `engine.js` : règles et état de la partie.
+- `app.js` : interactions et historique.
+- `engine.test.js` : vérifications du moteur. Avec Node.js installé, exécuter `npm test`.
+- `package.json` : configuration des modules et commande de test.
+
+Pour tester localement, servir ce dossier avec un serveur HTTP statique, puis ouvrir son adresse dans le navigateur. Les modules JavaScript nécessitent un accès HTTP plutôt qu’une ouverture directe du fichier HTML.
+
+### Limites et questions ouvertes
+
+- La vérification visuelle sur ordinateur et smartphone reste à réaliser : les outils locaux et le navigateur automatisé étaient indisponibles lors de la création.
+- La partie reste en mémoire : recharger ou fermer la page lance une nouvelle partie.
+- Aucune API de test pédagogique supplémentaire n’est revendiquée : son contrat ne figure pas dans ce README.
+- L’adresse du site reste à confirmer une fois GitHub Pages activé. Les sources ont été préparées directement dans GitHub ; le dossier local n’a pas été synchronisé.
