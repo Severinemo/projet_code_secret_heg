@@ -1,110 +1,119 @@
 # Code secret en couleurs
 
-Un jeu solo de déduction inspiré du Mastermind : retrouvez le code secret choisi par le programme en dix essais au maximum.
+Un jeu solo de déduction inspiré du Mastermind : retrouver une combinaison de quatre couleurs en dix essais maximum.
 
-## Présentation du projet
+## État actuel
 
-Code secret est une **application web utilisable sur ordinateur et sur smartphone**. Son interface devra s’adapter à ces deux types d’écran.
+- **Disponible :** application web publiée sur GitHub Pages, sélection de quatre couleurs, validation des propositions, calcul des indices, historique des essais, règles affichées, détection de victoire ou de défaite et lancement d’une nouvelle partie.
+- **Limites connues :** la présentation est conçue pour ordinateur et smartphone, mais son affichage et ses interactions n’ont pas encore été vérifiés dans un navigateur. La partie n’est pas sauvegardée : recharger la page lance une nouvelle partie. Les fichiers présents sur GitHub ne sont pas synchronisés avec le dossier local.
+- **Prévu :** vérifier le fonctionnement dans un navigateur sur ordinateur et smartphone, notamment la lisibilité, l’utilisation au clavier et les commandes tactiles.
 
-L’application devra être publiée sur **GitHub Pages** pour permettre de jouer depuis un navigateur web.
+## Commencer
 
-## Interface et informations visibles
+Ouvrir [Code secret en couleurs](https://severinemo.github.io/projet_code_secret_heg/) dans un navigateur web. Aucune installation n’est nécessaire pour jouer.
 
-L’interface devra afficher clairement, à tout moment :
+1. Choisir une couleur pour chacune des quatre positions, de gauche à droite.
+2. Cliquer sur **Valider l’essai**.
+3. Consulter les indices et les essais précédents pour préparer la proposition suivante.
+4. Continuer jusqu’à trouver le code ou atteindre dix essais.
+5. Cliquer sur **Nouvelle partie** pour recommencer.
 
-- **Les règles du jeu**, pour pouvoir les consulter pendant la partie.
-- **Les essais précédents et leurs indices**, pour pouvoir comparer les propositions et déduire le code secret.
+Les six couleurs possibles sont **rouge, bleu, vert, jaune, orange et violet**. Une même couleur peut apparaître plusieurs fois dans le code.
 
-Cette exigence s’applique aussi bien sur ordinateur que sur smartphone. L’historique restera visible après une victoire ou une défaite, jusqu’au lancement d’une nouvelle partie.
+Les indices indiquent :
 
-## Règles du jeu
+- **Bien placées :** couleurs correctes à la bonne position.
+- **Mal placées :** couleurs présentes dans le code, mais à une autre position.
 
-### 1. Le code à découvrir
+Chaque occurrence ne compte qu’une fois, en donnant la priorité aux couleurs bien placées. Les indices ne révèlent pas les positions concernées.
 
-La palette comprend six couleurs, dans cet ordre : **rouge, bleu, vert, jaune, orange, violet**. Leurs noms en minuscules sont également les identifiants exacts utilisés par l’API.
+Une proposition incomplète ou contenant une couleur non autorisée est refusée sans utiliser d’essai. Quatre couleurs bien placées donnent la victoire, même au dixième essai. Après la fin de partie, aucune nouvelle proposition ne peut modifier le résultat.
 
-Au début de la partie, le programme choisit au hasard un code de **quatre couleurs**. Une couleur peut apparaître plusieurs fois. Le code reste caché et ne change pas pendant la partie.
+## Exemple d’utilisation
 
-### 2. Les propositions
+Exemple illustratif, avec un code secret supposé égal à **rouge – bleu – vert – jaune** :
 
-Vous disposez de **dix essais**. Chaque proposition contient quatre couleurs, ordonnées de gauche à droite. Vous pouvez les modifier avant de valider votre proposition.
+- **Entrée ou action :** sélectionner **rouge – vert – bleu – orange**, puis valider.
+- **Résultat attendu :** la proposition apparaît dans l’historique avec **1 couleur bien placée et 2 mal placées**. Un essai est consommé.
 
-### 3. Les propositions invalides
+Le rouge est bien placé. Le vert et le bleu sont présents, mais intervertis. L’orange n’appartient pas au code.
 
-Une proposition incomplète ou contenant une couleur absente de la palette est refusée avec une explication. Elle ne consomme aucun essai et ne modifie pas l’historique.
+Dans une partie réelle, le code est choisi aléatoirement et reste caché : cette même proposition ne produit donc pas nécessairement ces indices.
 
-### 4. Les essais et l’historique
+## Vérifier
 
-Chaque proposition valide consomme un essai. Les propositions validées et leurs indices restent consultables jusqu’au démarrage d’une nouvelle partie.
+### Vérifications du moteur
 
-### 5. Les indices
+Le fichier `engine.test.js` contient 15 assertions portant sur :
 
-Après chaque proposition valide, le jeu affiche deux nombres :
+- les exemples d’indices et les répétitions de couleurs ;
+- le refus des propositions invalides sans consommation d’essai ;
+- la victoire au dixième essai et la défaite après dix échecs ;
+- le blocage des propositions après la fin de partie ;
+- l’état initial d’une nouvelle partie ;
+- la protection de l’historique contre une modification extérieure.
 
-- **Bien placées** : les couleurs identiques à celles du code secret à la même position.
-- **Mal placées** : les couleurs présentes dans le code secret, mais à une autre position.
+Pour les exécuter avec Node.js installé, ouvrir un terminal à la racine d’une copie locale du dépôt, puis lancer :
 
-Le calcul compte d’abord les couleurs bien placées, puis recherche les couleurs mal placées parmi les occurrences restantes. Chaque occurrence du code secret et de la proposition ne peut être comptée qu’une seule fois. Une couleur répétée dans la proposition ne rapporte donc pas plus de correspondances que le nombre d’occurrences disponibles dans le secret.
+```sh
+npm test
+```
 
-Les indices donnent uniquement des totaux : ils ne précisent pas quelles positions sont concernées.
+Aucune dépendance externe n’est nécessaire.
 
-### 6. La victoire et la défaite
+**Résultat observé le 18 novembre 2026 :** les 15 assertions ont réussi dans l’environnement JavaScript utilisé pendant la création. La commande `npm test` n’a pas été exécutée localement, les outils d’accès local étant indisponibles.
 
-- Vous gagnez dès que les **quatre couleurs sont bien placées**, y compris au dixième essai.
-- Vous perdez après **dix propositions valides sans avoir trouvé le code**.
+### Vérifications de publication
 
-### 7. La fin de partie et le redémarrage
+Le déploiement initial du jeu sur GitHub Pages s’est terminé avec succès le **18 novembre 2026**. Les exécutions sont consultables dans [GitHub Actions](https://github.com/Severinemo/projet_code_secret_heg/actions).
 
-Après une victoire ou une défaite, les propositions ne modifient plus la partie.
+### Vérifications restant à réaliser
 
-L’action **« Nouvelle partie »** choisit un nouveau code et remet à zéro le compteur d’essais, l’historique et les indices.
+Les tests du moteur ne valident pas l’interface. Il reste à vérifier dans un navigateur :
 
-## Exemples d’indices
+1. L’affichage et la lisibilité sur ordinateur et smartphone.
+2. La sélection des couleurs au clavier et au toucher.
+3. L’affichage des messages, du compteur, des essais et de leurs indices.
+4. Le comportement du bouton **Nouvelle partie**.
+5. Le déroulement complet d’une partie jusqu’à la victoire ou la défaite.
 
-| Code secret | Proposition | Bien placées | Mal placées |
-| --- | --- | --- | --- |
-| rouge – bleu – vert – jaune | rouge – vert – bleu – orange | 1 | 2 |
-| rouge – rouge – bleu – vert | rouge – rouge – rouge – rouge | 2 | 0 |
+## Se repérer
 
-Dans le premier exemple, le rouge est à la bonne position ; le vert et le bleu sont présents mais intervertis. Dans le second, les deux premiers rouges sont bien placés ; les deux rouges supplémentaires ne comptent pas.
+| Fichier | Rôle |
+| --- | --- |
+| `index.html` | Structure de la page et règles du jeu visibles. |
+| `style.css` | Présentation et adaptation aux tailles d’écran. |
+| `engine.js` | Code secret, validation, indices et état de la partie. |
+| `app.js` | Sélection des couleurs, boutons, messages et historique. |
+| `engine.test.js` | Vérifications automatisées du moteur. |
+| `package.json` | Configuration des modules JavaScript et commande de test. |
+| `.nojekyll` | Désactivation du traitement Jekyll pour le site statique. |
+| `README.md` | Présentation, utilisation, vérifications et suivi du projet. |
 
-## Accès au jeu
+Le code est conservé dans le [dépôt GitHub](https://github.com/Severinemo/projet_code_secret_heg). La branche `main` contient les sources ; la branche `gh-pages` fournit les fichiers publiés. Une évolution de `main` doit être reportée sur `gh-pages` pour apparaître sur le site.
 
-[Jouer à Code secret](https://severinemo.github.io/projet_code_secret_heg/)
+Les règles proviennent de l’annexe **« Règles communes »**, référence `code-couleurs-1.0`, du document [Projet — Code secret en couleurs, inspiré du Mastermind](https://docs.google.com/document/d/17RUqUnEvIilitiNSY1kbK0QT7vBVcUeAT3L6ONJN8XU/edit?tab=t.0#heading=h.kczu9qr0qzll), édition 2.2, mise à jour le 3 novembre 2026. Cette variante pédagogique ne reprend pas toutes les variantes commerciales du Mastermind.
 
-GitHub Pages publie le contenu de la branche `gh-pages`, dossier racine. Pour publier une évolution, mettre cette branche à jour avec la version validée de `main`.
+### Étapes de conception
 
-## Source
+Le **18 novembre 2026**, la première version a été réalisée en six étapes :
 
-Ces règles reprennent l’annexe **« Règles communes »**, référence `code-couleurs-1.0`, du document [Projet — Code secret en couleurs, inspiré du Mastermind](https://docs.google.com/document/d/17RUqUnEvIilitiNSY1kbK0QT7vBVcUeAT3L6ONJN8XU/edit?tab=t.0#heading=h.kczu9qr0qzll), édition 2.2, mise à jour le 3 novembre 2026.
+1. **Cadrage :** reprise des règles communes et des exigences d’affichage du README.
+2. **Architecture :** choix d’une application statique en HTML, CSS et JavaScript, sans dépendance externe.
+3. **Moteur :** création du tirage du code, de la validation, du calcul des indices et des conditions de fin.
+4. **Interface :** création des sélecteurs, des messages, du compteur et de l’historique ; ajout des noms des couleurs et des règles.
+5. **Vérification :** exécution réussie des 15 assertions du moteur ; vérification visuelle laissée ouverte.
+6. **Publication :** dépôt des sources sur GitHub, création de la branche `gh-pages` et déploiement initial réussi.
 
-Cette variante pédagogique suit les règles de cette annexe ; elle ne reprend pas toutes les variantes commerciales du Mastermind.
+## Aide et reprise
 
-## étapes de conception
+Le dépôt est géré par **Severinemo**.
 
-### 18 novembre 2026 — Version 1.0
+Pour signaler un problème, utiliser la rubrique [Issues du dépôt](https://github.com/Severinemo/projet_code_secret_heg/issues), si elle est activée. Indiquer :
 
-1. **Cadrage** : reprise des sept règles communes du README et des exigences ordinateur/smartphone, avec règles et historique affichés dans la page.
-2. **Architecture** : application statique HTML, CSS et JavaScript, sans dépendance externe ni serveur applicatif. `engine.js` isole les règles ; `app.js` gère l’interface.
-3. **Moteur** : tirage aléatoire de quatre couleurs avec répétitions, validation des propositions, calcul des indices sans double comptage et limite de dix essais.
-4. **Interface** : quatre sélecteurs utilisables au clavier et au toucher, noms associés aux couleurs, historique, compteur, messages de victoire/défaite et bouton Nouvelle partie. Sur petit écran, les règles suivent le plateau dans la page, sans menu replié.
-5. **Vérification** : 15 assertions exécutées avec succès sur le moteur JavaScript : exemples de l’annexe, couleurs déplacées, propositions invalides, victoire au dixième essai, défaite, blocage après la fin, nouvel état vierge et protection de l’historique contre une modification extérieure.
-6. **Publication** : dépôt des sources sur GitHub et création de la branche `gh-pages`. GitHub a lancé automatiquement le workflow « pages build and deployment ».
+- l’appareil et le navigateur utilisés ;
+- les actions effectuées ;
+- le résultat attendu et le résultat observé ;
+- une capture d’écran si elle aide à comprendre le problème.
 
-### Fichiers et reprise du projet
-
-- `index.html` : structure de la page et règles visibles.
-- `style.css` : présentation et adaptation aux écrans.
-- `engine.js` : règles et état de la partie.
-- `app.js` : interactions et historique.
-- `engine.test.js` : vérifications du moteur. Avec Node.js installé, exécuter `npm test`.
-- `package.json` : configuration des modules et commande de test.
-
-Pour tester localement, servir ce dossier avec un serveur HTTP statique, puis ouvrir son adresse dans le navigateur. Les modules JavaScript nécessitent un accès HTTP plutôt qu’une ouverture directe du fichier HTML.
-
-### Limites et questions ouvertes
-
-- La vérification visuelle sur ordinateur et smartphone reste à réaliser : les outils locaux et le navigateur automatisé étaient indisponibles lors de la création.
-- La partie reste en mémoire : recharger ou fermer la page lance une nouvelle partie.
-- Aucune API de test pédagogique supplémentaire n’est revendiquée : son contrat ne figure pas dans ce README.
-- Les sources ont été préparées directement dans GitHub ; le dossier local n’a pas été synchronisé.
+Pour reprendre le développement, lire les règles et les limites ci-dessus, limiter chaque changement à son objectif, puis exécuter les tests du moteur et vérifier les interactions concernées dans le navigateur. Consigner les résultats et les questions ouvertes dans ce README, puis créer un commit pour chaque changement important.
