@@ -70,6 +70,23 @@ Environnement : Windows, Node.js v24.22.3. Commandes réellement exécutées : `
 
 Aucun échec du moteur ou du contrôleur n’a été observé dans ces tests. La taille de 36 pixels est définie dans le CSS, mais le rendu effectif et les éventuels débordements restent à vérifier visuellement. Ces tests ont été exécutés avant publication.
 
+### Nouvelle exécution après publication — version 1.1.0, 25 novembre 2026
+
+**Version concernée :** [commit 43f2a920d457a049c6823f244c3fc6d4163a422c](https://github.com/Severinemo/projet_code_secret_heg/commit/43f2a920d457a049c6823f244c3fc6d4163a422c). Avant l’exécution, les contenus de `app.js` et `engine.js` récupérés sur GitHub Pages ont été comparés à la copie locale : ils correspondent, après normalisation des fins de ligne et des espaces en fin de fichier.
+
+**Méthode : test automatisé avec une interface simulée (DOM minimal), sous Windows et Node.js v24.22.3.** La commande `node app.test.js` a exécuté le contrôleur réel avec des sélecteurs et événements simulés. Le code secret de test était fixé à **rouge – bleu – vert – jaune**. Ce ne sont pas des clics réalisés dans un navigateur.
+
+| Scénario | Résultat attendu | Résultat observé | Statut | Version / type |
+| --- | --- | --- | --- | --- |
+| Choisir rouge, bleu, vert, laisser la quatrième position vide, puis soumettre | Refus avec message, trois choix conservés, focus sur la quatrième position, aucun essai consommé | Message exact : « Veuillez sélectionner 4 couleurs avant de valider l’essai. » ; sélections rouge, bleu, vert et valeur vide conservées ; focus sur le quatrième sélecteur ; compteur 0 / 10 ; historique vide | Réussi | 1.1.0 / interface simulée |
+| Démarrer une nouvelle partie de test, choisir rouge, vert, bleu, orange, puis soumettre | Essai accepté ; sélecteurs vidés et pastilles neutres ; proposition conservée dans l’historique avec les bons indices | Quatre valeurs de sélection vides, correspondant à « Choisir… » ; quatre pastilles neutres ; compteur 1 / 10 ; proposition rouge–vert–bleu–orange conservée ; tableau avec en-têtes « Bien placées » / « Mal placées » et valeurs 1 / 2 | Réussi | 1.1.0 / interface simulée |
+
+Ces deux cas sont des scénarios distincts, avec une nouvelle partie entre eux. Le résultat 1 / 2 dépend du code secret fixé pour le test.
+
+**Résultat global de cette nouvelle exécution :** `9 scénarios du contrôleur réussis (DOM simulé).` Les sept autres scénarios couvrent zéro, une et deux couleurs, une saisie incomplète après un essai accepté, la victoire, la nouvelle partie et la défaite. Aucun échec n’a été observé dans cette suite. Les 15 assertions du moteur n’ont pas été relancées lors de cette exécution.
+
+**Limite :** la tentative d’ouverture du navigateur automatisé a échoué avant toute interaction, avec `CreateProcessWithLogonW failed: 1920`. Le rendu visuel et les interactions dans un vrai navigateur restent **non vérifiés**. Aucun fichier n’a été modifié pendant ces tests ; cette entrée du README en consigne les résultats a posteriori.
+
 ### Bilan des tests du moteur — version 1.0
 
 **Date d’exécution : 18 novembre 2026.** Les tests ont été exécutés dans l’environnement JavaScript de l’assistant, sur le code ensuite enregistré dans le commit [ea038fb8f0900511dab3c2f37afb93ae0996c13a](https://github.com/Severinemo/projet_code_secret_heg/commit/ea038fb8f0900511dab3c2f37afb93ae0996c13a) (version 1.0). Ils correspondent aux assertions de [engine.test.js à cette version](https://github.com/Severinemo/projet_code_secret_heg/blob/ea038fb8f0900511dab3c2f37afb93ae0996c13a/engine.test.js).
