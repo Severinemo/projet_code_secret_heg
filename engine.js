@@ -1,5 +1,5 @@
 export const COLORS = ['rouge','bleu','vert','jaune','orange','violet'];
-export function valid(code) { return Array.isArray(code) && code.length === 4 && code.every(c => COLORS.includes(c)); }
+export function valid(code) { return Array.isArray(code) && code.length === 4 && Array.from({length:4},(_,i)=>Object.hasOwn(code,i) && COLORS.includes(code[i])).every(Boolean); }
 export function score(secret, guess) {
   if (!valid(secret) || !valid(guess)) throw new Error('Quatre couleurs autorisées sont nécessaires.');
   let exact = 0; const remaining = {}, proposed = {};
@@ -28,4 +28,3 @@ export function randomCode() {
   }
   return out;
 }
-

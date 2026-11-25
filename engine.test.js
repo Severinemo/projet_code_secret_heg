@@ -17,4 +17,3 @@ function runTests(api) {
  return count;
 }
 console.log(runTests(api)+' vérifications réussies.');
-

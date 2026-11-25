@@ -4,6 +4,8 @@ Un jeu solo de déduction inspiré du Mastermind : retrouver une combinaison de 
 
 ## État actuel
 
+**Version 1.2.0 avec API 0.2 — 25 novembre 2026.** [Ouvrir le jeu en mode test](https://severinemo.github.io/projet_code_secret_heg/?test=1). Le bilan 1.1 ci-dessous est conservé à titre historique.
+
 **Version 1.1.0 — 25 novembre 2026.** Sources et tests disponibles dans ce dépôt ; publication via la branche `gh-pages`. Le résultat du déploiement est consultable dans [GitHub Actions](https://github.com/Severinemo/projet_code_secret_heg/actions).
 
 - **Disponible :** application web publiée sur GitHub Pages, sélection de quatre couleurs, validation des propositions, calcul des indices, historique des essais, règles affichées, détection de victoire ou de défaite et lancement d’une nouvelle partie.
@@ -41,6 +43,74 @@ Exemple illustratif, avec un code secret supposé égal à **rouge – bleu – 
 Le rouge est bien placé. Le vert et le bleu sont présents, mais intervertis. L’orange n’appartient pas au code.
 
 Dans une partie réelle, le code est choisi aléatoirement et reste caché : cette même proposition ne produit donc pas nécessairement ces indices.
+
+## API de test — version 1.2.0
+
+Implémentation du [contrat API 0.2](https://docs.google.com/document/d/1hxqc3QfG0PTknulNIisBvg-0h0W7CjRe6eHC1q_jBYU/edit), édition Google 1.5 du 28 octobre 2026, lue le 25 novembre 2026.
+
+### Existant et écarts corrigés
+
+Le moteur 1.1 calculait les indices et gérait les dix essais, mais ne fournissait pas l’objet global, les formats d’état, les promesses, l’état initial ni les erreurs du contrat. La version 1.2 ajoute `controller.js` : il détient une seule instance de `createGame`, utilisée aussi bien par les actions de l’interface que par l’API. Aucun moteur parallèle ni solution exposée n’est ajouté.
+
+- `window.codeSecretTest` est exposé uniquement avec le paramètre `test=1`.
+- `version` vaut `"0.2"` ; `getConfig()` et `getState()` sont synchrones.
+- `startGame(options?)` et `submitGuess(guess)` renvoient des promesses résolues après mise à jour synchrone de l’interface.
+- Le mode test démarre à `not-started`, avec zéro essai et les trois champs `last…` à `null`. Le mode normal conserve le démarrage automatique.
+- Configuration, formats d’historique, priorités des refus, rejets de démarrage et copies indépendantes suivent le contrat.
+- Les tableaux creux sont rejetés. Les saisies incomplètes dans l’interface sont transmises comme des propositions de moins de quatre couleurs, conservées et expliquées.
+- L’historique et les règles de la version 1.1, notamment les indices à droite et la remise à zéro après validation, sont conservés.
+
+### Utilisation locale et publication
+
+Les sources et tests de cette version sont transférés depuis `Code secret/version-1.2`, commit local testé `e27a7e6fb77b128fe1c2dc3527b15626c878e575`. La publication passe par la branche `gh-pages` ; son résultat est consultable dans [GitHub Actions](https://github.com/Severinemo/projet_code_secret_heg/actions).
+
+- [Jeu normal](https://severinemo.github.io/projet_code_secret_heg/)
+- [Jeu en mode test API 0.2](https://severinemo.github.io/projet_code_secret_heg/?test=1)
+
+En mode test, la partie est initialement `not-started`. Appeler `startGame()` ou utiliser « Nouvelle partie » avant de proposer un code.
+
+Servir ce dossier avec un serveur HTTP statique, ouvrir son URL en ajoutant `?test=1` (ou `&test=1` si elle possède déjà des paramètres), puis attendre la présence de `window.codeSecretTest`. Exemple dans la console du navigateur :
+
+```js
+const api = window.codeSecretTest;
+api.getConfig();
+await api.startGame({secret: ["rouge", "rouge", "bleu", "vert"]});
+await api.submitGuess(["rouge", "bleu", "rouge", "rouge"]);
+// attempts: 1 ; lastResult: {wellPlaced: 1, misplaced: 2}
+api.getState();
+```
+
+### Résultats du 25 novembre 2026 — version 1.2.0
+
+Environnement réellement utilisé : Windows, Node.js v24.22.3. Exécutions directes avec `node`, sans navigateur ; `npm` n’était pas disponible lors de la préparation précédente. `npm test` est configuré pour lancer les trois suites lorsque npm est installé.
+
+| Vérification | Attendu | Observé | Statut |
+| --- | --- | --- | --- |
+| `node engine.test.js` | Les 15 assertions historiques réussissent | 15 vérifications réussies | Réussi |
+| `node api.test.js` : exemples T01 à T09 | Indices, état, historique et last… conformes | Les neuf cas passent, dont victoires T05/T08 | Réussi |
+| Configuration et activation conditionnelle | Configuration exacte ; exposition uniquement pour test=1 ; état initial not-started | Conforme dans le contrôle automatisé | Réussi |
+| Refus, options et tableaux creux | Codes normalisés et priorité type → longueur → couleur ; démarrage invalide sans mutation | Conforme ; rejets Error avec code et message | Réussi |
+| Cycle de vie | Refus au neuvième sans consommer ; victoire au dixième ; défaite ; après-fin ; redémarrage | Conforme | Réussi |
+| Copies et getters | Aucune mutation externe de la partie ; getters sans effet ; absence de secret dans l’état | Conforme | Réussi |
+| Bilan `node api.test.js` | Tous les scénarios du contrat implémentés passent | 16 scénarios réussis | Réussi |
+| Première exécution de `node app.test.js` | Les lignes historiques restent intactes lors d’un refus | Échec : lignes recréées malgré un contenu identique | Échec observé, corrigé |
+| Correction du refus | Seul le message change ; pas de nouveau rendu de l’historique | Après correction, scénario de conservation réussi | Réussi |
+| `node app.test.js`, après correction | Saisies 0–4 couleurs, remise à zéro, victoire/défaite et nouvelle partie conformes | 10 scénarios réussis dans un DOM simulé | Réussi |
+| Partage API/interface | Un essai API apparaît dans l’historique ; un essai saisi dans l’interface est visible via getState ; démarrage invalide sans effet sur l’écran simulé | Conforme dans le scénario d’intégration | Réussi |
+| `node --check controller.js` et `node --check app.js` | Aucune erreur de syntaxe | Terminaison sans erreur | Réussi |
+| Navigateur réel, ordinateur et smartphone | État et écran synchronisés, utilisation au clavier/toucher | Outil navigateur bloqué : CreateProcessWithLogonW failed: 1920 | Non réalisé |
+| API sur GitHub Pages, contexte neuf et caches | Présence avec test=1, absence sinon, appels et écran conformes | Appels dans un navigateur publié non exécutés | Non réalisé |
+
+Les tests d’interface exécutent le véritable `app.js` contre un DOM minimal simulé : ils ne valident pas le rendu visuel ni le chargement des modules par un vrai navigateur. Les appels de l’API dans un vrai navigateur sur le site publié et les essais enseignants restent à vérifier. La disponibilité des fichiers par HTTP ne constitue pas une exécution de l’API.
+
+### Fichiers ajoutés ou adaptés
+
+- `controller.js` : état contractuel et accès commun API/interface au moteur.
+- `api.test.js` : configuration, T01–T09, erreurs, cycle de vie et indépendance des données.
+- `app.js` et `app.test.js` : raccordement à la partie commune et scénarios simulés.
+- `engine.js` : rejet explicite des tableaux creux.
+- `package.json`, `index.html` : version 1.2.0 et commandes de test.
+- `README.md` : contrat, utilisation, résultats et limites.
 
 ## Vérifier
 
@@ -208,4 +278,3 @@ Pour signaler un problème, utiliser la rubrique [Issues du dépôt](https://git
 - une capture d’écran si elle aide à comprendre le problème.
 
 Pour reprendre le développement, lire les règles et les limites ci-dessus, limiter chaque changement à son objectif, puis exécuter les tests du moteur et vérifier les interactions concernées dans le navigateur. Consigner les résultats et les questions ouvertes dans ce README, puis créer un commit pour chaque changement important.
-

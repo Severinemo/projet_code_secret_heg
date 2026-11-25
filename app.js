@@ -1,7 +1,8 @@
-import {COLORS,createGame,randomCode} from './engine.js';
+import {COLORS} from './engine.js';
+import {createController,exposeTestAPI} from './controller.js';
 const hues={rouge:'#c74742',bleu:'#3975b8',vert:'#40845f',jaune:'#f1cc42',orange:'#e88937',violet:'#8956b1'};
 const $=id=>document.getElementById(id);
-let game;
+let controller;
 const selects = COLORS.slice(0,4).map((_,i)=>{
   const label=document.createElement('label');label.textContent='POSITION '+(i+1);
   const select=document.createElement('select');select.setAttribute('aria-label','Couleur en position '+(i+1));
@@ -11,7 +12,7 @@ const selects = COLORS.slice(0,4).map((_,i)=>{
   label.append(select,swatch);$('selectors').append(label);return select;
 });
 function render(){
-  const state=game.getState();$('counter').textContent=state.history.length+' / 10 essais';
+  const state=controller.getState();$('counter').textContent=state.history.length+' / 10 essais';
   $('choices').disabled=state.status!=='playing';$('submit').disabled=state.status!=='playing';
   $('empty').hidden=state.history.length>0;$('history').replaceChildren();
   state.history.forEach((entry,i)=>{
@@ -25,7 +26,7 @@ function render(){
     ['Bien placées','Mal placées'].forEach(text=>{const th=document.createElement('th');th.scope='col';th.textContent=text;headings.append(th)});
     head.append(headings);
     const body=document.createElement('tbody');const values=document.createElement('tr');
-    [entry.exact,entry.misplaced].forEach(value=>{const td=document.createElement('td');td.textContent=String(value);values.append(td)});
+    [entry.result.wellPlaced,entry.result.misplaced].forEach(value=>{const td=document.createElement('td');td.textContent=String(value);values.append(td)});
     body.append(values);result.append(head,body);
     li.append(n,pegs,result);$('history').append(li);
   });
@@ -33,19 +34,33 @@ function render(){
 function clearSelection(){
   selects.forEach(s=>{s.value='';s.dispatchEvent(new Event('change'))});
 }
-function restart(){
-  game=createGame(randomCode());clearSelection();
-  $('message').className='';$('message').textContent='À vous de jouer. Une couleur peut apparaître plusieurs fois.';render();
+function onChange(state,event){
+  if(event.accepted){clearSelection();render();}
+  if(event.action==='start'){
+    $('message').className='';
+    $('message').textContent='À vous de jouer. Une couleur peut apparaître plusieurs fois.';
+  }else if(state.lastError){
+    $('message').textContent=state.lastError.message;
+    if(state.status==='playing'){const blank=selects.find(s=>!s.value);if(blank)blank.focus();}
+  }else{
+    const result=state.lastResult;
+    $('message').textContent=state.status==='won'?'Bravo ! Vous avez trouvé le code en '+state.attempts+' essai(s).':state.status==='lost'?'Les dix essais sont épuisés. Partie perdue. Prêt pour un nouveau défi ?':result.wellPlaced+' bien placée(s), '+result.misplaced+' mal placée(s). Affinez votre prochain essai.';
+    $('message').className=state.status==='playing'?'':'end';
+    if(state.status==='playing')selects[0].focus();
+  }
 }
-$('form').addEventListener('submit',e=>{
-  e.preventDefault();const result=game.submit(selects.map(s=>s.value));
-  if(!result.ok){$('message').textContent=result.message;const blank=selects.find(s=>!s.value);if(blank)blank.focus();return}
-  clearSelection();
-  render();
-  if(result.status==='playing') selects[0].focus();
-  $('message').textContent=result.status==='won'?'Bravo ! Vous avez trouvé le code en '+game.getState().history.length+' essai(s).':result.status==='lost'?'Les dix essais sont épuisés. Partie perdue. Prêt pour un nouveau défi ?':result.exact+' bien placée(s), '+result.misplaced+' mal placée(s). Affinez votre prochain essai.';
-  $('message').className=result.status==='playing'?'':'end';
+controller=createController(onChange);
+$('form').addEventListener('submit',async e=>{
+  e.preventDefault();
+  // Une case vide de l'interface représente une couleur non choisie.
+  const guess=selects.map(s=>s.value);
+  await controller.submitGuess(guess.includes('')?guess.filter(Boolean):guess);
 });
-$('restart').addEventListener('click',()=>{restart();selects[0].focus()});
-restart();
-
+$('restart').addEventListener('click',async()=>{await controller.startGame();selects[0].focus()});
+render();
+const testMode=exposeTestAPI(window,window.location.search,controller);
+if(testMode){
+  $('message').textContent='Mode test : démarrez une nouvelle partie pour jouer.';
+}else{
+  await controller.startGame();
+}
