@@ -4,8 +4,10 @@ Un jeu solo de déduction inspiré du Mastermind : retrouver une combinaison de 
 
 ## État actuel
 
+**Version 1.1.0 — 25 novembre 2026.** Sources et tests disponibles dans ce dépôt ; publication via la branche `gh-pages`. Le résultat du déploiement est consultable dans [GitHub Actions](https://github.com/Severinemo/projet_code_secret_heg/actions).
+
 - **Disponible :** application web publiée sur GitHub Pages, sélection de quatre couleurs, validation des propositions, calcul des indices, historique des essais, règles affichées, détection de victoire ou de défaite et lancement d’une nouvelle partie.
-- **Limites connues :** la présentation est conçue pour ordinateur et smartphone, mais son affichage et ses interactions n’ont pas encore été vérifiés dans un navigateur. La partie n’est pas sauvegardée : recharger la page lance une nouvelle partie. Les fichiers présents sur GitHub ne sont pas synchronisés avec le dossier local.
+- **Limites connues :** la présentation est conçue pour ordinateur et smartphone, mais son affichage et ses interactions n’ont pas encore été vérifiés dans un navigateur. La partie n’est pas sauvegardée : recharger la page lance une nouvelle partie. La copie de préparation locale se trouve dans `Code secret/version-1.1` ; les anciens fichiers du dossier parent n’ont pas été remplacés.
 - **Prévu :** vérifier le fonctionnement dans un navigateur sur ordinateur et smartphone, notamment la lisibilité, l’utilisation au clavier et les commandes tactiles.
 
 ## Commencer
@@ -13,8 +15,8 @@ Un jeu solo de déduction inspiré du Mastermind : retrouver une combinaison de 
 Ouvrir [Code secret en couleurs](https://severinemo.github.io/projet_code_secret_heg/) dans un navigateur web. Aucune installation n’est nécessaire pour jouer.
 
 1. Choisir une couleur pour chacune des quatre positions, de gauche à droite.
-2. Cliquer sur **Valider l’essai**.
-3. Consulter les indices et les essais précédents pour préparer la proposition suivante.
+2. Cliquer sur **Valider l’essai**. Après un essai accepté, la saisie est vidée ; si moins de quatre couleurs sont choisies, les choix sont conservés et un message demande de compléter la proposition.
+3. Consulter le tableau « Bien placées / Mal placées » et les essais précédents pour préparer la proposition suivante.
 4. Continuer jusqu’à trouver le code ou atteindre dix essais.
 5. Cliquer sur **Nouvelle partie** pour recommencer.
 
@@ -41,6 +43,32 @@ Le rouge est bien placé. Le vert et le bleu sont présents, mais intervertis. L
 Dans une partie réelle, le code est choisi aléatoirement et reste caché : cette même proposition ne produit donc pas nécessairement ces indices.
 
 ## Vérifier
+
+### Bilan de la version 1.1.0 — 25 novembre 2026
+
+Version testée localement dans `Code secret/version-1.1`, commit local `916f342bae0b57150766c0266b59b388479035a9`. Sources de départ : `main` au commit `0f3ebb400c6dc3130404c7860d25616932a9fe85`. Les fichiers du jeu et des tests ont ensuite été transférés sans modification dans ce dépôt. Les résultats ci-dessous concernent cette version 1.1.0 ; ils ne constituent pas un test du site en ligne.
+
+Modifications : chaque essai dispose d’un tableau à deux colonnes « Bien placées » et « Mal placées » ; les pastilles passent de 20 à 36 pixels ; les quatre sélecteurs et leurs pastilles sont réinitialisés uniquement après un essai accepté. Une saisie de zéro à trois couleurs reste intacte et affiche « Veuillez sélectionner 4 couleurs avant de valider l’essai. ». L’historique est conservé.
+
+Environnement : Windows, Node.js v24.22.3. Commandes réellement exécutées : `node engine.test.js`, `node app.test.js`, `node --check app.js`. Le contrôleur réel est exécuté contre un DOM minimal simulé ; ce contrôle ne remplace pas un navigateur.
+
+| Contrôle | Attendu | Observé | Statut | Type / version |
+| --- | --- | --- | --- | --- |
+| 15 assertions historiques du moteur (cas 1 à 15 détaillés dans le bilan 1.0 ci-dessous) | Toutes conformes aux mêmes attentes | « 15 vérifications réussies. » | Réussi | Automatisé / 1.1.0 |
+| Saisie de 0 couleur | Refus, saisie conservée, compteur à 0, historique vide, message explicite et focus sur première case vide | Toutes ces assertions conformes | Réussi | DOM simulé / 1.1.0 |
+| Saisie de 1 couleur | Même refus sans effacement | Toutes ces assertions conformes | Réussi | DOM simulé / 1.1.0 |
+| Saisie de 2 couleurs | Même refus sans effacement | Toutes ces assertions conformes | Réussi | DOM simulé / 1.1.0 |
+| Saisie de 3 couleurs | Même refus sans effacement | Toutes ces assertions conformes | Réussi | DOM simulé / 1.1.0 |
+| Essai rouge–vert–bleu–orange contre rouge–bleu–vert–jaune | Saisie vide, pastilles neutres, 1 essai conservé, tableau 1 bien placée / 2 mal placées avec en-têtes de colonnes | Toutes ces assertions conformes | Réussi | DOM simulé / 1.1.0 |
+| Saisie incomplète après un essai accepté | Historique et compteur inchangés, trois choix conservés | Toutes ces assertions conformes | Réussi | DOM simulé / 1.1.0 |
+| Victoire | Saisie vidée, commandes désactivées, historique conservé, message de victoire | Toutes ces assertions conformes | Réussi | DOM simulé / 1.1.0 |
+| Nouvelle partie | Commandes actives, historique vide et compteur à 0 | Toutes ces assertions conformes | Réussi | DOM simulé / 1.1.0 |
+| Défaite après dix essais | Dix essais conservés, validation désactivée, saisie vide et message de défaite | Toutes ces assertions conformes | Réussi | DOM simulé / 1.1.0 |
+| Syntaxe du contrôleur | Aucune erreur | `node --check app.js` terminé sans erreur | Réussi | Automatisé / 1.1.0 |
+| Exécution par `npm test` | Lancement des suites | Commande npm introuvable ; suites exécutées directement avec node | Échec d’outil | Local / 1.1.0 |
+| Rendu ordinateur et smartphone, clavier et toucher | Tableaux et pastilles lisibles, interactions correctes | Navigateur automatisé indisponible : « trusted Node process exited unexpectedly » | Non réalisé | Navigateur / 1.1.0 |
+
+Aucun échec du moteur ou du contrôleur n’a été observé dans ces tests. La taille de 36 pixels est définie dans le CSS, mais le rendu effectif et les éventuels débordements restent à vérifier visuellement. Ces tests ont été exécutés avant publication.
 
 ### Bilan des tests du moteur — version 1.0
 
@@ -101,7 +129,7 @@ npm test
 
 Aucune dépendance externe n’est nécessaire. Pour reproduire la version historique, utiliser le commit `ea038fb8f0900511dab3c2f37afb93ae0996c13a`. La commande locale n’a pas été exécutée lors de la création : les outils locaux étaient indisponibles.
 
-Ce bilan consigne les preuves existantes ; aucun test du jeu n’a été relancé lors de sa rédaction.
+Le bilan historique ci-dessus conserve les preuves de la version 1.0. Les nouvelles exécutions sont consignées séparément dans le bilan 1.1.0.
 
 ## Se repérer
 
@@ -110,6 +138,7 @@ Ce bilan consigne les preuves existantes ; aucun test du jeu n’a été relanc�
 | `index.html` | Structure de la page et règles du jeu visibles. |
 | `style.css` | Présentation et adaptation aux tailles d’écran. |
 | `engine.js` | Code secret, validation, indices et état de la partie. |
+| `app.test.js` | Scénarios du contrôleur exécutés avec un DOM simulé. |
 | `app.js` | Sélection des couleurs, boutons, messages et historique. |
 | `engine.test.js` | Vérifications automatisées du moteur. |
 | `package.json` | Configuration des modules JavaScript et commande de test. |
@@ -121,6 +150,8 @@ Le code est conservé dans le [dépôt GitHub](https://github.com/Severinemo/pro
 Les règles proviennent de l’annexe **« Règles communes »**, référence `code-couleurs-1.0`, du document [Projet — Code secret en couleurs, inspiré du Mastermind](https://docs.google.com/document/d/17RUqUnEvIilitiNSY1kbK0QT7vBVcUeAT3L6ONJN8XU/edit?tab=t.0#heading=h.kczu9qr0qzll), édition 2.2, mise à jour le 3 novembre 2026. Cette variante pédagogique ne reprend pas toutes les variantes commerciales du Mastermind.
 
 ### Étapes de conception
+
+**25 novembre 2026 — Version 1.1.0** : clarification des indices, agrandissement des pastilles et réinitialisation conditionnelle de la saisie. Les 15 assertions du moteur et 9 scénarios du contrôleur ont réussi. Vérification visuelle non réalisée. Publication autorisée par l’utilisateur : transfert de tous les fichiers nécessaires, du test de contrôleur et du README sur `main`, puis mise à jour de `gh-pages`.
 
 Le **18 novembre 2026**, la première version a été réalisée en six étapes :
 
@@ -143,3 +174,4 @@ Pour signaler un problème, utiliser la rubrique [Issues du dépôt](https://git
 - une capture d’écran si elle aide à comprendre le problème.
 
 Pour reprendre le développement, lire les règles et les limites ci-dessus, limiter chaque changement à son objectif, puis exécuter les tests du moteur et vérifier les interactions concernées dans le navigateur. Consigner les résultats et les questions ouvertes dans ce README, puis créer un commit pour chaque changement important.
+

@@ -13,7 +13,7 @@ export function createGame(secret) {
     getState: () => ({status, history:history.map(x=>({...x,guess:[...x.guess]}))}),
     submit(guess) {
       if(status !== 'playing') return {ok:false, message:'La partie est terminée. Lancez une nouvelle partie.'};
-      if(!valid(guess)) return {ok:false,message:'Choisissez une couleur pour chacune des quatre positions.'};
+      if(!valid(guess)) return {ok:false,message:'Veuillez sélectionner 4 couleurs avant de valider l’essai.'};
       const result = score(hidden,guess); history.push({guess:[...guess],...result});
       if(result.exact === 4) status='won'; else if(history.length === 10) status='lost';
       return {ok:true,...result,status};
@@ -28,3 +28,4 @@ export function randomCode() {
   }
   return out;
 }
+
