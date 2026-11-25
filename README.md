@@ -44,6 +44,21 @@ Dans une partie réelle, le code est choisi aléatoirement et reste caché : cet
 
 ## Vérifier
 
+### Placement des indices à droite — 25 novembre 2026
+
+**Version concernée :** évolution CSS de la version 1.1.0, commit [7647ce8fd5c87f13608b6c681a546ac6bda7f408](https://github.com/Severinemo/projet_code_secret_heg/commit/7647ce8fd5c87f13608b6c681a546ac6bda7f408). Le numéro de version reste 1.1.0 ; le commit identifie précisément cette modification.
+
+**Changement :** le tableau « Bien placées / Mal placées » est positionné à droite des pastilles de chaque essai, sur la même ligne. Seul `style.css` a été modifié : grille à trois colonnes (numéro, couleurs, indices) et tableau placé en colonne 3, ligne 1. Sur les écrans trop étroits, un défilement horizontal de l’historique est prévu pour éviter les superpositions.
+
+| Vérification effectuée | Résultat attendu | Résultat observé | Statut |
+| --- | --- | --- | --- |
+| Inspection du diff GitHub par rapport au commit parent | Modification limitée au placement dans le CSS | Seul `style.css` modifié ; règles de grille et de défilement de l’historique ajustées | Réussi |
+| Déploiement GitHub Pages du commit `7647ce8` | Workflow terminé avec succès | `status: completed`, `conclusion: success` | Réussi |
+| Lecture HTTP du CSS publié | Réponse HTTP 200 et présence des règles de placement | HTTP 200 ; `grid-column:3;grid-row:1` et `grid-template-columns:22px minmax(165px,1fr) 132px` présents | Réussi |
+| Contrôle visuel sur ordinateur et smartphone | Tableau lisible à droite des pastilles, sans chevauchement | Aucun contrôle visuel effectué pour cette modification | Non réalisé |
+
+Preuve de publication : [workflow GitHub Pages du commit concerné](https://github.com/Severinemo/projet_code_secret_heg/actions/runs/45597286989). Le contrôle HTTP confirme que les nouvelles règles CSS sont servies, mais ne prouve pas le rendu effectif dans un navigateur. Les tests du moteur et du contrôleur n’ont pas été relancés pour ce changement exclusivement CSS.
+
 ### Bilan de la version 1.1.0 — 25 novembre 2026
 
 Version testée localement dans `Code secret/version-1.1`, commit local `916f342bae0b57150766c0266b59b388479035a9`. Sources de départ : `main` au commit `0f3ebb400c6dc3130404c7860d25616932a9fe85`. Les fichiers du jeu et des tests ont ensuite été transférés sans modification dans ce dépôt. Les résultats ci-dessous concernent cette version 1.1.0 ; ils ne constituent pas un test du site en ligne.
@@ -167,6 +182,8 @@ Le code est conservé dans le [dépôt GitHub](https://github.com/Severinemo/pro
 Les règles proviennent de l’annexe **« Règles communes »**, référence `code-couleurs-1.0`, du document [Projet — Code secret en couleurs, inspiré du Mastermind](https://docs.google.com/document/d/17RUqUnEvIilitiNSY1kbK0QT7vBVcUeAT3L6ONJN8XU/edit?tab=t.0#heading=h.kczu9qr0qzll), édition 2.2, mise à jour le 3 novembre 2026. Cette variante pédagogique ne reprend pas toutes les variantes commerciales du Mastermind.
 
 ### Étapes de conception
+
+**25 novembre 2026 — Ajustement du placement (version 1.1.0, commit `7647ce8`)** : déplacement du tableau d’indices à droite des pastilles par une modification limitée à `style.css`. Déploiement réussi et CSS publié vérifié par HTTP ; rendu visuel non contrôlé. Détails dans la rubrique « Vérifier ».
 
 **25 novembre 2026 — Version 1.1.0** : clarification des indices, agrandissement des pastilles et réinitialisation conditionnelle de la saisie. Les 15 assertions du moteur et 9 scénarios du contrôleur ont réussi. Vérification visuelle non réalisée. Publication autorisée par l’utilisateur : transfert de tous les fichiers nécessaires, du test de contrôleur et du README sur `main`, puis mise à jour de `gh-pages`.
 
